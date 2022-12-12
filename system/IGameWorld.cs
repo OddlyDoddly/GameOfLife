@@ -12,5 +12,6 @@ namespace GameOfLife.system
         public IEntity[,] Entities { get; set; }
         public void Update(double deltaTime);
         public bool EntityExistsAtPos(Vector2i transform);
+        public void ResizeWorld(Vector2i worldSize);
     }
 }

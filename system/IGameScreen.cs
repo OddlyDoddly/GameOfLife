@@ -10,6 +10,7 @@ namespace GameOfLife.system
     {
         public Vector2i ScreenPosition { get; set; }
         public Vector2i ScreenSize { get; set; }
+        public void Update(double deltaTime, IGameWorld gameWorld);
         public void Draw(double deltaTime, IGameWorld gameWorld);
     }
 }

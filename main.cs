@@ -20,18 +20,20 @@ void Main()
         long deltaTime = (now - lastUpdate);
         long deltaFrameTime = (now - lastDraw);
 
+        // Runs an update on the gameworld's logic
+        if (deltaTime >= 1000/tps)
+        {
+            consoleScreen.Update(deltaTime, gameWorld);
+            gameWorld.Update(deltaTime);
+            lastUpdate = now;
+        }
+
         if (deltaFrameTime >= 1000 / fps)
         {
             consoleScreen.Draw(deltaTime, gameWorld);
             lastDraw = now;
         }
 
-        // Runs an update on the gameworld's logic
-        if (deltaTime >= 1000/tps)
-        {
-            gameWorld.Update(deltaTime);
-            lastUpdate = now;
-        }
     }
 
 }

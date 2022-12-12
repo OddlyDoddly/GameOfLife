@@ -20,6 +20,26 @@ namespace GameOfLife.system.impl
             InitializeCells(worldSize);
         }
 
+        public void ResizeWorld(Vector2i worldSize) {
+            IEntity[,] newWorld = new IEntity[worldSize.X, worldSize.Y];
+
+            // Copy over old entities, or create new empty ones.
+            for(int x = 0; x < worldSize.X; ++x)
+            {
+                for ( int y = 0; y < worldSize.Y; ++y)
+                {
+                    if(x < WorldSize.X && y < WorldSize.Y) {
+                        newWorld[x, y] = Entities[x, y];
+                    } else {
+                        newWorld[x, y] = new CellEntity(new Vector2i(x, y), false);
+                    }
+                }
+            }
+
+            Entities = newWorld;
+            WorldSize = worldSize;
+        }
+
         private void InitializeCells(Vector2i worldSize)
         {
             Random r = new Random();
@@ -27,7 +47,7 @@ namespace GameOfLife.system.impl
             {
                 for (int y = 0; y < worldSize.Y; y++)
                 {
-                    if (r.Next(12) == 0)
+                    if (r.Next(8) == 0)
                     {
                         Entities[x, y].isLive = true;
                     }

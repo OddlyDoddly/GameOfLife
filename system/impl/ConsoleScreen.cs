@@ -36,7 +36,7 @@ namespace GameOfLife.system.impl
 
         private char[,] GetWorldScreenBuffer(IGameWorld gameWorld, Vector2i pos, Vector2i size)
         {
-            char[,] screenBuffer = EmptyConsoleBuffer;
+            char[,] screenBuffer = CurrentConsoleBuffer;
 
             for (int x = pos.X; x < pos.X + size.X; ++x)
             {
@@ -55,18 +55,47 @@ namespace GameOfLife.system.impl
             return screenBuffer;
         }
 
+        private void ResizeConsole(Vector2i consoleSize) {
+            EmptyConsoleBuffer = new char[consoleSize.X, consoleSize.Y];
+            CurrentConsoleBuffer = new char[consoleSize.X, consoleSize.Y];
+
+            for (int x = 0; x < EmptyConsoleBuffer.GetLength(0); x++)
+            {
+                for(int y = 0; y < EmptyConsoleBuffer.GetLength(1); y++)
+                {
+                    EmptyConsoleBuffer[x, y] = ' ';
+                    CurrentConsoleBuffer[x, y] = ' ';
+                }
+            }
+
+            ScreenSize = consoleSize;
+        }
+
+        public void Update(double deltaTime, IGameWorld gameWorld) {
+            Vector2i currentConsoleSize = new Vector2i(Console.BufferWidth, Console.BufferHeight);
+            if(currentConsoleSize.X != ScreenSize.X || currentConsoleSize.Y != ScreenSize.Y){
+                ResizeConsole(currentConsoleSize);
+                gameWorld.ResizeWorld(currentConsoleSize);
+            }
+        }
+
         public void Draw(double deltaTime, IGameWorld gameWorld)
         {
+            Vector2i currentConsoleSize = new Vector2i(Console.BufferWidth, Console.BufferHeight);
+            if(currentConsoleSize.X != ScreenSize.X || currentConsoleSize.Y != ScreenSize.Y){
+                return;
+            }
+            
             Array.Copy(EmptyConsoleBuffer, CurrentConsoleBuffer, EmptyConsoleBuffer.Length);
 
-            CurrentConsoleBuffer = GetWorldScreenBuffer(gameWorld, ScreenPosition, ScreenSize);
+            char[,] consoleBuffer = GetWorldScreenBuffer(gameWorld, ScreenPosition, ScreenSize);
 
             ConsoleString = "";
-            for (int iy = 0; iy < Console.BufferHeight - 1; iy++)
+            for (int iy = 0; iy < consoleBuffer.GetLength(1) - 1; iy++)
             {
-                for (int ix = 0; ix < Console.BufferWidth; ix++)
+                for (int ix = 0; ix < consoleBuffer.GetLength(0); ix++)
                 {
-                    ConsoleString += CurrentConsoleBuffer[ix, iy];
+                    ConsoleString += consoleBuffer[ix, iy];
                 }
             }
             Console.SetCursorPosition(0, 0);
